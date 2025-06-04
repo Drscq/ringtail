@@ -4,6 +4,64 @@ This is a pure Golang implementation of Ringtail [eprint.iacr.org/2024/1113](htt
 
 **WARNING:** This implementation is an academic proof-of-concept prototype, has not received careful code review, and is not ready for production use.
 
+## Getting Started
+
+The project requires **Go 1.19** or later. The commands below show how to set up
+and run the code on a typical Ubuntu system.
+
+### Installation
+
+1. Install Go using the package manager (or download it from the [official Go
+   website](https://go.dev/dl/)):
+
+   ```bash
+   sudo apt update
+   sudo apt install -y golang-go
+   ```
+
+2. Clone the repository and download the Go module dependencies:
+
+   ```bash
+   git clone https://github.com/daryakaviani/ringtail.git
+   cd ringtail
+   go mod download
+   ```
+
+### Running
+
+You can run the scheme locally (all parties on a single machine) or as separate
+processes communicating over the network.
+
+#### Local Mode
+
+Run all parties on your machine using the special party id `l`. The second
+argument is the number of iterations to average over. The third argument is the
+number of parties:
+
+```bash
+go run main.go l 1 3
+```
+
+#### Networked Mode
+
+To run parties on separate terminals or machines, give each process a unique
+party id between `0` and `parties-1` and specify the total number of parties. For
+example, with three parties run the following in three different terminals or
+hosts:
+
+```bash
+go run main.go 0 1 3
+go run main.go 1 1 3
+go run main.go 2 1 3
+```
+
+You can also build a binary instead of using `go run`:
+
+```bash
+go build -o ringtail
+./ringtail <partyID> <iters> <parties>
+```
+
 ### Codebase Overview
 - `networking/`
     - `networking.go`: Includes the networking stack which allows signers to form peer-to-peer network connections with other parties. Each party concurrently communicates with every other party by serializing and sending its messages through outgoing TCP sockets, while simultaneously receiving and processing incoming messages.
