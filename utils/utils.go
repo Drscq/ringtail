@@ -54,17 +54,14 @@ func MatrixMatrixMulNTT(r *ring.Ring, M1, M2 structs.Matrix[ring.Poly], result s
 		}
 	}
 
-	temp := r.NewPoly()
-
-	// Perform matrix multiplication coefficient-wise
-	for i := 0; i < m; i++ {
-		for j := 0; j < n; j++ {
-			for k := 0; k < p; k++ {
-				// r.MForm(M1[i][k], temp)
-				r.MulCoeffsMontgomeryThenAdd(temp, M2[k][j], result[i][j])
-			}
-		}
-	}
+        // Perform matrix multiplication coefficient-wise
+        for i := 0; i < m; i++ {
+                for j := 0; j < n; j++ {
+                        for k := 0; k < p; k++ {
+                                r.MulCoeffsMontgomeryThenAdd(M1[i][k], M2[k][j], result[i][j])
+                        }
+                }
+        }
 
 	// Convert the result and all other polynomials back to the original domain
 	ConvertMatrixFromNTT(r, result)
@@ -77,15 +74,13 @@ func VectorPolyMulNTT(r *ring.Ring, vec structs.Vector[ring.Poly], poly ring.Pol
 	// Convert the polynomial to the NTT domain
 	r.NTT(poly, poly)
 
-	// Convert all elements of the vector to the NTT domain
-	ConvertVectorToNTT(r, vec)
-	ConvertVectorToNTT(r, result)
-	temp := r.NewPoly()
+        // Convert all elements of the vector to the NTT domain
+        ConvertVectorToNTT(r, vec)
 
-	// Perform the multiplications coefficient-wise
-	for i := range vec {
-		r.MulCoeffsMontgomery(temp, poly, result[i])
-	}
+        // Perform the multiplications coefficient-wise
+        for i := range vec {
+                r.MulCoeffsMontgomery(vec[i], poly, result[i])
+        }
 
 	// Convert the result and all other polynomials back to the original domain
 	ConvertVectorFromNTT(r, result)
